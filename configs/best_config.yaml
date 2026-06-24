@@ -1,0 +1,44 @@
+# Best configuration for RecSys-HR 2026 WorkRB Challenge
+
+model:
+  name: "sentence-transformers/all-mpnet-base-v2"
+  max_length: 192
+  temperature: 0.03
+  encode_batch_size: 256
+
+training:
+  batch_size: 128
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  epochs: 3
+  seed: 42
+  warmup_steps: 500
+
+loss:
+  type: "InfoNCE"
+  temperature: 0.03
+
+data:
+  datasets:
+    - "TechWolf/Synthetic-ESCO-skill-sentences"
+  num_workers: 4
+
+evaluation:
+  metric: "ndcg@100_macro"
+  early_stopping_patience: 3
+  min_delta: 0.001
+
+# Cross-encoder re-ranking (optional)
+reranker:
+  enabled: true
+  model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  top_k: 200
+  max_length: 256
+  batch_size: 64
+
+# LLM re-ranking (optional, for maximum performance)
+llm_reranker:
+  enabled: false
+  model: "Qwen/Qwen2.5-1.5B-Instruct"
+  top_k: 50
+  retriever_weight: 0.7
